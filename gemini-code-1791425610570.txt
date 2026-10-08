@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Interaktif RBT: Elektromehanikal & Reka Bentuk</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .ghost-card {
+      opacity: 0.4;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+  <!-- Header / Navigation -->
+  <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center font-extrabold text-xl shadow-lg shadow-indigo-500/30">
+          🛠️
+        </div>
+        <div>
+          <h1 class="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-indigo-200 bg-clip-text text-transparent">
+            RBT Tingkatan 3: Pembelajaran Interaktif
+          </h1>
+          <p class="text-xs text-slate-400">Reka Bentuk Elektromehanikal & Pengaturcaraan</p>
+        </div>
+      </div>
+
+      <!-- Progress Score Tracker -->
+      <div class="flex items-center gap-6 bg-slate-900/60 px-4 py-2 rounded-xl border border-slate-700/60">
+        <div class="text-center">
+          <span class="text-xs text-slate-400 block uppercase tracking-wider font-semibold">Markah</span>
+          <span id="scoreDisplay" class="text-lg font-bold text-emerald-400">0 / 400</span>
+        </div>
+        <div class="h-8 w-px bg-slate-700"></div>
+        <div class="text-center">
+          <span class="text-xs text-slate-400 block uppercase tracking-wider font-semibold">Kemajuan</span>
+          <span id="progressDisplay" class="text-lg font-bold text-cyan-400">0%</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full space-y-12">
+
+    <!-- Hero / Navigation Tabs -->
+    <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <button onclick="switchTab('tab-elemen')" id="btn-tab-elemen" class="tab-btn p-4 rounded-xl border border-indigo-500 bg-indigo-500/10 text-indigo-300 font-semibold text-sm text-left transition flex items-center gap-3">
+        <span class="text-2xl">🧩</span>
+        <div>
+          <div class="text-xs text-indigo-400 uppercase tracking-wider font-bold">Bahagian A</div>
+          <div>Pengelasan Elemen</div>
+        </div>
+      </button>
+      <button onclick="switchTab('tab-detektif')" id="btn-tab-detektif" class="tab-btn p-4 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-semibold text-sm text-left transition hover:border-slate-600 flex items-center gap-3">
+        <span class="text-2xl">🔍</span>
+        <div>
+          <div class="text-xs text-slate-500 uppercase tracking-wider font-bold">Bahagian B</div>
+          <div>Detektif RBT</div>
+        </div>
+      </button>
+      <button onclick="switchTab('tab-kod')" id="btn-tab-kod" class="tab-btn p-4 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-semibold text-sm text-left transition hover:border-slate-600 flex items-center gap-3">
+        <span class="text-2xl">🤖</span>
+        <div>
+          <div class="text-xs text-slate-500 uppercase tracking-wider font-bold">Bahagian C</div>
+          <div>Pengaturcaraan</div>
+        </div>
+      </button>
+      <button onclick="switchTab('tab-bajet')" id="btn-tab-bajet" class="tab-btn p-4 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-semibold text-sm text-left transition hover:border-slate-600 flex items-center gap-3">
+        <span class="text-2xl">💰</span>
+        <div>
+          <div class="text-xs text-slate-500 uppercase tracking-wider font-bold">Bahagian D</div>
+          <div>Kalkulator Kos</div>
+        </div>
+      </button>
+    </section>
+
+    <!-- SECTION 1: BAHAGIAN A - PENGELASAN ELEMEN -->
+    <section id="tab-elemen" class="tab-content space-y-6">
+      <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <span class="inline-block px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-bold rounded-full mb-2">Bahagian A: Pilihan Elemen & Komponen</span>
+            <h2 class="text-xl font-bold text-white">🛠️ Aktiviti: Agihkan Komponen Ke Kotak Elemen Yang Betul!</h2>
+            <p class="text-slate-400 text-sm mt-1">Klik komponen atau seret (drag) ke dalam kotak elemen yang sepadan.</p>
+          </div>
+          <button onclick="resetElemen()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium rounded-lg transition">
+            🔄 Mulakan Semula
+          </button>
+        </div>
+
+        <!-- Bank Komponen -->
+        <div class="mb-8 p-4 bg-slate-900/80 rounded-xl border border-slate-700">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Senarai Komponen (Klik/Seret Komponen):</h3>
+          <div id="componentsBank" class="flex flex-wrap gap-3 min-h-[60px] items-center">
+            <!-- Dynamic Components insertion -->
+          </div>
+        </div>
+
+        <!-- 3 Target Drop Boxes -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- ELEKTRIK -->
+          <div ondragover="allowDrop(event)" ondrop="dropComponent(event, 'elektrik')" class="bg-gradient-to-b from-amber-500/10 to-slate-900/80 border-2 border-dashed border-amber-500/40 hover:border-amber-400 rounded-2xl p-5 flex flex-col min-h-[220px] transition">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-2xl">⚡</span>
+              <div>
+                <h3 class="font-bold text-amber-400">ELEKTRIK</h3>
+                <p class="text-[11px] text-slate-400">Pembekal & pengalir tenaga elektrik</p>
+              </div>
+            </div>
+            <div id="box-elektrik" class="drop-box flex-1 space-y-2 p-2 rounded-xl bg-slate-900/40"></div>
+          </div>
+
+          <!-- ELEKTRONIK -->
+          <div ondragover="allowDrop(event)" ondrop="dropComponent(event, 'elektronik')" class="bg-gradient-to-b from-cyan-500/10 to-slate-900/80 border-2 border-dashed border-cyan-500/40 hover:border-cyan-400 rounded-2xl p-5 flex flex-col min-h-[220px] transition">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-2xl">🔌</span>
+              <div>
+                <h3 class="font-bold text-cyan-400">ELEKTRONIK</h3>
+                <p class="text-[11px] text-slate-400">Pengawal & pemproses isyarat</p>
+              </div>
+            </div>
+            <div id="box-elektronik" class="drop-box flex-1 space-y-2 p-2 rounded-xl bg-slate-900/40"></div>
+          </div>
+
+          <!-- MEKANIKAL -->
+          <div ondragover="allowDrop(event)" ondrop="dropComponent(event, 'mekanikal')" class="bg-gradient-to-b from-emerald-500/10 to-slate-900/80 border-2 border-dashed border-emerald-500/40 hover:border-emerald-400 rounded-2xl p-5 flex flex-col min-h-[220px] transition">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-2xl">⚙️</span>
+              <div>
+                <h3 class="font-bold text-emerald-400">MEKANIKAL</h3>
+                <p class="text-[11px] text-slate-400">Pemindah pergerakan & daya</p>
+              </div>
+            </div>
+            <div id="box-mekanikal" class="drop-box flex-1 space-y-2 p-2 rounded-xl bg-slate-900/40"></div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-between items-center pt-4 border-t border-slate-700/60">
+          <div id="elemenFeedback" class="text-sm font-medium text-slate-300"></div>
+          <button onclick="checkElemenAnswers()" class="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-500/20 transition">
+            Semak Jawapan (100 Mata)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: BAHAGIAN B - DETEKTIF RBT -->
+    <section id="tab-detektif" class="tab-content space-y-6 hidden">
+      <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+        <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-300 text-xs font-bold rounded-full mb-2">Bahagian B: Analisis & Troubelshooting</span>
+        <h2 class="text-xl font-bold text-white mb-2">🚗 Senario Detektif RBT: Kereta Mainan Terkandas!</h2>
+        
+        <!-- Scenario Box -->
+        <div class="bg-amber-950/30 border border-amber-500/30 p-4 rounded-xl mb-6">
+          <div class="flex items-start gap-3">
+            <span class="text-3xl">🔊</span>
+            <div>
+              <h3 class="font-bold text-amber-300">"Krik-krik... Krik-krik..."</h3>
+              <p class="text-slate-300 text-sm mt-1">
+                Motor kereta Ali berputar dan mengeluarkan bunyi dengan baik, tetapi **roda kereta langsung tidak bergerak!**
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <!-- Interactive Car Inspection Diagram -->
+          <div class="bg-slate-900 p-6 rounded-2xl border border-slate-700 flex flex-col items-center justify-center space-y-4 relative">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Litar & Mekanisme Kereta Ali</h4>
+            
+            <div class="w-full max-w-md bg-slate-800 p-4 rounded-xl border border-slate-600 space-y-3">
+              <!-- Inspection point A -->
+              <button onclick="inspectPart('bateri')" class="w-full p-3 rounded-lg bg-slate-700/80 hover:bg-slate-700 border border-slate-600 text-left flex justify-between items-center transition group">
+                <span class="text-sm font-medium text-slate-200">1. Bekalan Bateri 9V</span>
+                <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400 group-hover:text-amber-400">Uji Komponen 🔍</span>
+              </button>
+
+              <!-- Inspection point B -->
+              <button onclick="inspectPart('mikropengawal')" class="w-full p-3 rounded-lg bg-slate-700/80 hover:bg-slate-700 border border-slate-600 text-left flex justify-between items-center transition group">
+                <span class="text-sm font-medium text-slate-200">2. Papan Mikropengawal & Litar Elektronik</span>
+                <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400 group-hover:text-amber-400">Uji Komponen 🔍</span>
+              </button>
+
+              <!-- Inspection point C -->
+              <button onclick="inspectPart('gear')" class="w-full p-3 rounded-lg bg-slate-700/80 hover:bg-slate-700 border border-slate-600 text-left flex justify-between items-center transition group">
+                <span class="text-sm font-medium text-slate-200">3. Sambungan Gear Motor dengan Gandar Roda</span>
+                <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400 group-hover:text-amber-400">Uji Komponen 🔍</span>
+              </button>
+            </div>
+
+            <!-- Visual Diagnostic Display Box -->
+            <div id="diagnosticBox" class="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-center min-h-[90px] flex items-center justify-center text-xs text-slate-400">
+              Sila klik pada mana-mana bahagian di atas untuk menjalankan ujian kerosakan.
+            </div>
+          </div>
+
+          <!-- Multiple Choice Quiz Options -->
+          <div class="space-y-4">
+            <h3 class="font-bold text-slate-200">Berdasarkan dapatan ujian di sebelah, apakah punca utama kerosakan ini?</h3>
+            
+            <div class="space-y-3">
+              <label class="block p-4 rounded-xl border border-slate-700 bg-slate-900/60 hover:border-slate-500 cursor-pointer transition">
+                <div class="flex items-center gap-3">
+                  <input type="radio" name="troubleshoot" value="A" class="w-4 h-4 text-amber-500 accent-amber-500">
+                  <span class="text-sm text-slate-200 font-medium">A) Bateri telah kehabisan kuasa voltan</span>
+                </div>
+              </label>
+
+              <label class="block p-4 rounded-xl border border-slate-700 bg-slate-900/60 hover:border-slate-500 cursor-pointer transition">
+                <div class="flex items-center gap-3">
+                  <input type="radio" name="troubleshoot" value="B" class="w-4 h-4 text-amber-500 accent-amber-500">
+                  <span class="text-sm text-slate-200 font-medium">B) Sambungan gear motor dengan gandar roda haus / tercabut</span>
+                </div>
+              </label>
+
+              <label class="block p-4 rounded-xl border border-slate-700 bg-slate-900/60 hover:border-slate-500 cursor-pointer transition">
+                <div class="flex items-center gap-3">
+                  <input type="radio" name="troubleshoot" value="C" class="w-4 h-4 text-amber-500 accent-amber-500">
+                  <span class="text-sm text-slate-200 font-medium">C) Papan mikropengawal rosak dan mengalami litar pintas</span>
+                </div>
+              </label>
+            </div>
+
+            <button onclick="checkTroubleshoot()" class="w-full mt-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-amber-500/20 transition">
+              Hantar Jawapan Detektif (100 Mata)
+            </button>
+
+            <div id="detektifFeedback" class="mt-4 p-4 rounded-xl hidden"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: BAHAGIAN C - BLOCK CODING -->
+    <section id="tab-kod" class="tab-content space-y-6 hidden">
+      <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+        <span class="inline-block px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-bold rounded-full mb-2">Bahagian C: Carta Alir & Pengaturcaraan</span>
+        <h2 class="text-xl font-bold text-white">🤖 Tugasan Program Robot Penjaga Air Takung Tanaman</h2>
+        <p class="text-slate-400 text-sm mt-1 mb-6">
+          Susun blok-blok pseudokod di bawah mengikut **urutan logik yang betul** apabila sensor mengesan status <span class="text-rose-400 font-semibold">TIADA AIR</span>.
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Reorderable Block Coding Interface -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Susun Blok Logik (Guna Butang ⬆️ ⬇️):</h3>
+            
+            <div id="codeBlocksContainer" class="space-y-2">
+              <!-- Dynamically rendered reorderable blocks -->
+            </div>
+
+            <div class="pt-4 flex gap-3">
+              <button onclick="checkAlgorithm()" class="flex-1 py-3 bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold text-sm rounded-xl transition shadow-lg shadow-cyan-500/20">
+                Uji Kod Robot (100 Mata)
+              </button>
+              <button onclick="resetAlgorithm()" class="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-xl transition">
+                Reset
+              </button>
+            </div>
+          </div>
+
+          <!-- Robot Simulation Screen -->
+          <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between items-center min-h-[300px]">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Simulasi Skrin Robot Penjaga Air</h3>
+            
+            <div id="robotSimDisplay" class="w-full max-w-xs p-6 rounded-2xl bg-slate-950 border-2 border-slate-800 text-center space-y-3 transition">
+              <div id="robotIcon" class="text-5xl">🪴</div>
+              <div id="robotStatusText" class="text-xs font-semibold text-slate-400">
+                Sistem Dalam Keadaan Sedia
+              </div>
+            </div>
+
+            <div id="algorithmFeedback" class="text-xs text-center font-medium min-h-[24px]"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: BAHAGIAN D - KALKULATOR KOS -->
+    <section id="tab-bajet" class="tab-content space-y-6 hidden">
+      <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+        <span class="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded-full mb-2">Bahagian D: Pengiraan Kos & Rekabentuk Produk</span>
+        <h2 class="text-xl font-bold text-white mb-1">💰 Simulasi Belanja Projek RBT</h2>
+        <p class="text-slate-400 text-sm mb-6">
+          Kumpulan anda diperuntukkan bajet sebanyak <span class="text-emerald-400 font-bold">RM 30.00</span>. Pilih item yang diperlukan untuk melihat jumlah perbelanjaan dan baki wang.
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Item Selection List -->
+          <div class="lg:col-span-2 space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Pilih Kuantiti Bahan & Komponen:</h3>
+            
+            <div id="budgetItemsList" class="space-y-3">
+              <!-- Dynamic Item Rows -->
+            </div>
+          </div>
+
+          <!-- Live Calculator Card -->
+          <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-6 flex flex-col justify-between space-y-6">
+            <div>
+              <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-4 pb-2 border-b border-slate-800">
+                🧮 Resit Kalkulator Interaktif
+              </h3>
+
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between text-slate-400">
+                  <span>Peruntukan Bajet:</span>
+                  <span class="font-semibold text-slate-200">RM 30.00</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                  <span>Jumlah Perbelanjaan:</span>
+                  <span id="totalSpentText" class="font-bold text-rose-400">RM 0.00</span>
+                </div>
+                <div class="h-px bg-slate-800 my-2"></div>
+                <div class="flex justify-between text-base font-bold">
+                  <span class="text-slate-200">Baki Bajet:</span>
+                  <span id="remainingBudgetText" class="text-emerald-400">RM 30.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quiz Question on Budgeting -->
+            <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+              <label class="block text-xs text-slate-300 font-semibold">
+                Soalan: Jika anda memilih 1 Motor, 1 Bateri, 1 Sensor, dan 1 Bahan Binaan, berapakah BAKI peruntukan wang anda?
+              </label>
+              <div class="flex gap-2">
+                <input type="number" id="userBudgetAnswer" placeholder="RM ?" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500">
+                <button onclick="checkBudgetQuiz()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-lg transition whitespace-nowrap">
+                  Hantar (100 Mata)
+                </button>
+              </div>
+              <div id="budgetQuizFeedback" class="text-xs font-medium"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final Result Modal / Summary Card -->
+    <section id="summaryModal" class="hidden bg-slate-800/90 border border-indigo-500/50 rounded-2xl p-8 text-center space-y-4">
+      <div class="text-5xl">🏆</div>
+      <h2 class="text-2xl font-bold text-white">Tahniah! Anda Telah Menyelesaikan Semua Aktiviti!</h2>
+      <p class="text-slate-300 text-sm max-w-md mx-auto">
+        Keputusan pemahaman topik Reka Bentuk Elektromehanikal anda:
+      </p>
+      <div id="finalScoreText" class="text-3xl font-extrabold text-emerald-400">
+        400 / 400 Mata
+      </div>
+      <button onclick="location.reload()" class="px-6 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-sm rounded-xl shadow-lg transition">
+        Cuba Lagi 🔄
+      </button>
+    </section>
+
+  </main>
+
+  <footer class="bg-slate-950 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+    <p>© Modul Interaktif RBT Tingkatan 3 — Rekabentuk & Teknologi Elektromehanikal</p>
+  </footer>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // System State
+    let scores = {
+      elemen: 0,
+      detektif: 0,
+      kod: 0,
+      bajet: 0
+    };
+
+    // TAB SWITCHING LOGIC
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-indigo-500', 'bg-indigo-500/10', 'text-indigo-300');
+        btn.classList.add('border-slate-700', 'bg-slate-800', 'text-slate-400');
+      });
+
+      document.getElementById(tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('btn-' + tabId);
+      activeBtn.classList.add('border-indigo-500', 'bg-indigo-500/10', 'text-indigo-300');
+      activeBtn.classList.remove('border-slate-700', 'bg-slate-800', 'text-slate-400');
+    }
+
+    // Sound FX Synthesis
+    function playAudio(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'success') {
+          osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+          osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.1, ctx.currentTime);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.25);
+        } else if (type === 'error') {
+          osc.frequency.setValueAtTime(220, ctx.currentTime);
+          gain.gain.setValueAtTime(0.1, ctx.currentTime);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.2);
+        }
+      } catch(e) {}
+    }
+
+    // UPDATE SCORE DISPLAY
+    function updateScoreDisplay() {
+      const total = scores.elemen + scores.detektif + scores.kod + scores.bajet;
+      document.getElementById('scoreDisplay').innerText = total + ' / 400';
+      const percentage = Math.round((total / 400) * 100);
+      document.getElementById('progressDisplay').innerText = percentage + '%';
+
+      if (percentage === 100) {
+        document.getElementById('summaryModal').classList.remove('hidden');
+      }
+    }
+
+    /* -------------------------------------------------------------------
+       BAHAGIAN A: DRAG & DROP / CLICK ELEMEN
+    ------------------------------------------------------------------- */
+    const initialComponents = [
+      { id: 'c1', name: 'Bateri 9V', category: 'elektrik', icon: '🔋' },
+      { id: 'c2', name: 'Plag / Suis Utama', category: 'elektrik', icon: '🔌' },
+      { id: 'c3', name: 'Sensor Kelembapan', category: 'elektronik', icon: '🌡️' },
+      { id: 'c4', name: 'Papan Mikropengawal', category: 'elektronik', icon: '📟' },
+      { id: 'c5', name: 'Gear Motor', category: 'mekanikal', icon: '⚙️' },
+      { id: 'c6', name: 'Takal & Tali Sawat', category: 'mekanikal', icon: '🛞' }
+    ];
+
+    let currentComponents = [...initialComponents];
+    let userPlacements = {};
+
+    function renderElemen() {
+      const bank = document.getElementById('componentsBank');
+      bank.innerHTML = '';
+
+      ['elektrik', 'elektronik', 'mekanikal'].forEach(cat => {
+        document.getElementById('box-' + cat).innerHTML = '';
+      });
+
+      currentComponents.forEach(comp => {
+        const placement = userPlacements[comp.id];
+        const card = document.createElement('div');
+        card.className = 'px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-xs font-semibold text-slate-200 cursor-pointer flex items-center gap-2 transition shadow-sm';
+        card.draggable = true;
+        card.id = 'comp-' + comp.id;
+        card.innerHTML = `<span>${comp.icon}</span> <span>${comp.name}</span>`;
+        
+        card.ondragstart = (e) => {
+          e.dataTransfer.setData('text/plain', comp.id);
+        };
+
+        // Click to cycle categories for quick mobile access
+        card.onclick = () => {
+          cyclePlacement(comp.id);
+        };
+
+        if (placement) {
+          document.getElementById('box-' + placement).appendChild(card);
+        } else {
+          bank.appendChild(card);
+        }
+      });
+    }
+
+    function cyclePlacement(id) {
+      const categories = [null, 'elektrik', 'elektronik', 'mekanikal'];
+      const current = userPlacements[id] || null;
+      const nextIndex = (categories.indexOf(current) + 1) % categories.length;
+      userPlacements[id] = categories[nextIndex];
+      renderElemen();
+    }
+
+    function allowDrop(e) {
+      e.preventDefault();
+    }
+
+    function dropComponent(e, targetCategory) {
+      e.preventDefault();
+      const compId = e.dataTransfer.getData('text/plain');
+      if (compId) {
+        userPlacements[compId] = targetCategory;
+        renderElemen();
+      }
+    }
+
+    function resetElemen() {
+      userPlacements = {};
+      renderElemen();
+      document.getElementById('elemenFeedback').innerText = '';
+    }
+
+    function checkElemenAnswers() {
+      let correct = 0;
+      initialComponents.forEach(comp => {
+        if (userPlacements[comp.id] === comp.category) {
+          correct++;
+        }
+      });
+
+      const totalComp = initialComponents.length;
+      if (correct === totalComp) {
+        scores.elemen = 100;
+        playAudio('success');
+        document.getElementById('elemenFeedback').className = 'text-sm font-semibold text-emerald-400';
+        document.getElementById('elemenFeedback').innerText = '🎉 Cemerlang! Semua ' + totalComp + ' komponen dimasukkan ke dalam elemen yang tepat!';
+      } else {
+        scores.elemen = Math.round((correct / totalComp) * 100);
+        playAudio('error');
+        document.getElementById('elemenFeedback').className = 'text-sm font-semibold text-rose-400';
+        document.getElementById('elemenFeedback').innerText = `⚠️ Anda mendapat ${correct}/${totalComp} betul. Sila semak semula kategori komponen.`;
+      }
+      updateScoreDisplay();
+    }
+
+
+    /* -------------------------------------------------------------------
+       BAHAGIAN B: DETEKTIF RBT
+    ------------------------------------------------------------------- */
+    function inspectPart(part) {
+      const box = document.getElementById('diagnosticBox');
+      if (part === 'bateri') {
+        box.className = "w-full p-4 rounded-xl bg-slate-900 border border-emerald-500/40 text-left text-xs text-emerald-300 space-y-1";
+        box.innerHTML = "<strong>✅ Ujian Bateri:</strong> Voltan stabil pada 9.1V. Arus elektrik mengalir dengan sempurna ke motor.";
+      } else if (part === 'mikropengawal') {
+        box.className = "w-full p-4 rounded-xl bg-slate-900 border border-emerald-500/40 text-left text-xs text-emerald-300 space-y-1";
+        box.innerHTML = "<strong>✅ Ujian Mikropengawal:</strong> Atur cara berfungsi baik. Isyarat kawalan menghantar arus ke motor.";
+      } else if (part === 'gear') {
+        box.className = "w-full p-4 rounded-xl bg-slate-900 border border-rose-500/50 text-left text-xs text-rose-300 space-y-1";
+        box.innerHTML = "<strong>🚨 KEROSAKAN DIKESAN:</strong> Motor berpusing tetapi gear pemutar tercabut daripada gandar roda! Tiada pemindahan daya mekanikal berlaku.";
+      }
+    }
+
+    function checkTroubleshoot() {
+      const selected = document.querySelector('input[name="troubleshoot"]:checked');
+      const feedback = document.getElementById('detektifFeedback');
+      feedback.classList.remove('hidden');
+
+      if (!selected) {
+        feedback.className = 'mt-4 p-4 rounded-xl bg-rose-500/20 text-rose-300 text-xs font-semibold';
+        feedback.innerText = 'Sila pilih satu jawapan pilihan terlebih dahulu.';
+        return;
+      }
+
+      if (selected.value === 'B') {
+        scores.detektif = 100;
+        playAudio('success');
+        feedback.className = 'mt-4 p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold';
+        feedback.innerText = '🎉 TEPAT SEKALI! Walaupun motor elektrik berputar, pergerakan roda memerlukan gear & gandar mekanikal yang terhubung rapat untuk memindahkan daya.';
+      } else {
+        scores.detektif = 0;
+        playAudio('error');
+        feedback.className = 'mt-4 p-4 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-semibold';
+        feedback.innerText = '❌ Kurang Tepat. Memandangkan bunyi motor kedengaran berputar, bekalan elektrik dan mikropengawal adalah berfungsi. Semak bahagian pemindahan daya mekanikal!';
+      }
+      updateScoreDisplay();
+    }
+
+
+    /* -------------------------------------------------------------------
+       BAHAGIAN C: CARTA ALIR & ALGORITMA
+    ------------------------------------------------------------------- */
+    const initialAlgorithm = [
+      { id: 1, text: '1. JIKA sensor mengesan TIADA AIR' },
+      { id: 2, text: '2. Papar ikon ✕ pada skrin paparan' },
+      { id: 3, text: '3. Bunyikan pembaz (Buzzer) amaran' },
+      { id: 4, text: '4. Putarkan motor servo untuk siram air' }
+    ];
+
+    // Shuffled version for the start
+    let currentAlgorithm = [
+      { id: 3, text: '3. Bunyikan pembaz (Buzzer) amaran' },
+      { id: 1, text: '1. JIKA sensor mengesan TIADA AIR' },
+      { id: 4, text: '4. Putarkan motor servo untuk siram air' },
+      { id: 2, text: '2. Papar ikon ✕ pada skrin paparan' }
+    ];
+
+    function renderAlgorithm() {
+      const container = document.getElementById('codeBlocksContainer');
+      container.innerHTML = '';
+
+      currentAlgorithm.forEach((item, index) => {
+        const block = document.createElement('div');
+        block.className = 'p-3 bg-slate-900 border border-slate-700 rounded-xl flex items-center justify-between text-xs text-slate-200 font-medium';
+        block.innerHTML = `
+          <span>${item.text}</span>
+          <div class="flex gap-1">
+            <button onclick="moveBlock(${index}, -1)" class="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white" ${index === 0 ? 'disabled class="opacity-20"' : ''}>⬆️</button>
+            <button onclick="moveBlock(${index}, 1)" class="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white" ${index === currentAlgorithm.length - 1 ? 'disabled class="opacity-20"' : ''}>⬇️</button>
+          </div>
+        `;
+        container.appendChild(block);
+      });
+    }
+
+    function moveBlock(index, direction) {
+      const targetIndex = index + direction;
+      if (targetIndex >= 0 && targetIndex < currentAlgorithm.length) {
+        const temp = currentAlgorithm[index];
+        currentAlgorithm[index] = currentAlgorithm[targetIndex];
+        currentAlgorithm[targetIndex] = temp;
+        renderAlgorithm();
+      }
+    }
+
+    function resetAlgorithm() {
+      currentAlgorithm = [
+        { id: 3, text: '3. Bunyikan pembaz (Buzzer) amaran' },
+        { id: 1, text: '1. JIKA sensor mengesan TIADA AIR' },
+        { id: 4, text: '4. Putarkan motor servo untuk siram air' },
+        { id: 2, text: '2. Papar ikon ✕ pada skrin paparan' }
+      ];
+      renderAlgorithm();
+      document.getElementById('robotSimDisplay').className = "w-full max-w-xs p-6 rounded-2xl bg-slate-950 border-2 border-slate-800 text-center space-y-3 transition";
+      document.getElementById('robotIcon').innerText = "🪴";
+      document.getElementById('robotStatusText').innerText = "Sistem Dalam Keadaan Sedia";
+      document.getElementById('algorithmFeedback').innerText = "";
+    }
+
+    function checkAlgorithm() {
+      const correctOrder = [1, 2, 3, 4];
+      const userOrder = currentAlgorithm.map(b => b.id);
+      const isCorrect = JSON.stringify(correctOrder) === JSON.stringify(userOrder);
+
+      const simDisplay = document.getElementById('robotSimDisplay');
+      const robotIcon = document.getElementById('robotIcon');
+      const robotStatus = document.getElementById('robotStatusText');
+      const feedback = document.getElementById('algorithmFeedback');
+
+      if (isCorrect) {
+        scores.kod = 100;
+        playAudio('success');
+        simDisplay.className = "w-full max-w-xs p-6 rounded-2xl bg-cyan-950/60 border-2 border-cyan-400 text-center space-y-3 transition animate-pulse";
+        robotIcon.innerText = "🚨 🚰 🚨";
+        robotStatus.innerText = "❌ TIADA AIR! Buzzer Berbunyi & Motor Servo Menyiram!";
+        feedback.className = "text-xs font-semibold text-emerald-400";
+        feedback.innerText = "🎉 Tahniah! Urutan pengaturcaraan robot penjaga air tepat dan beroperasi sempurna!";
+      } else {
+        scores.kod = 0;
+        playAudio('error');
+        simDisplay.className = "w-full max-w-xs p-6 rounded-2xl bg-rose-950/40 border-2 border-rose-500/40 text-center space-y-3 transition";
+        robotIcon.innerText = "⚠️";
+        robotStatus.innerText = "Ralat Logik Atur Cara!";
+        feedback.className = "text-xs font-semibold text-rose-400";
+        feedback.innerText = "❌ Urutan belum betul. Robot mesti mengesan status terlebih dahulu sebelum mengeluarkan amaran & tindakan.";
+      }
+      updateScoreDisplay();
+    }
+
+
+    /* -------------------------------------------------------------------
+       BAHAGIAN D: KALKULATOR KOS
+    ------------------------------------------------------------------- */
+    const budgetItems = [
+      { id: 'item1', name: 'Motor DC 6V', price: 6.00, qty: 1, icon: '⚙️' },
+      { id: 'item2', name: 'Pemegang + Bateri 9V', price: 3.00, qty: 1, icon: '🔋' },
+      { id: 'item3', name: 'Sensor Kelembapan Air', price: 8.00, qty: 1, icon: '🌡️' },
+      { id: 'item4', name: 'Bahan Binaan / Kerangka Projek', price: 5.00, qty: 1, icon: '🧱' }
+    ];
+
+    function renderBudgetItems() {
+      const container = document.getElementById('budgetItemsList');
+      container.innerHTML = '';
+
+      budgetItems.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = 'p-4 bg-slate-900 border border-slate-700 rounded-xl flex items-center justify-between';
+        row.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-xl">${item.icon}</span>
+            <div>
+              <div class="text-xs font-bold text-slate-200">${item.name}</div>
+              <div class="text-[11px] text-slate-400">Harga: RM ${item.price.toFixed(2)}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="updateQty(${idx}, -1)" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg border border-slate-600 flex items-center justify-center text-xs">-</button>
+            <span class="w-6 text-center text-xs font-bold text-white">${item.qty}</span>
+            <button onclick="updateQty(${idx}, 1)" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg border border-slate-600 flex items-center justify-center text-xs">+</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      calculateBudgetTotals();
+    }
+
+    function updateQty(index, change) {
+      if (budgetItems[index].qty + change >= 0) {
+        budgetItems[index].qty += change;
+        renderBudgetItems();
+      }
+    }
+
+    function calculateBudgetTotals() {
+      const totalSpent = budgetItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const remaining = 30.00 - totalSpent;
+
+      document.getElementById('totalSpentText').innerText = `RM ${totalSpent.toFixed(2)}`;
+      const remDisplay = document.getElementById('remainingBudgetText');
+      remDisplay.innerText = `RM ${remaining.toFixed(2)}`;
+
+      if (remaining < 0) {
+        remDisplay.className = "text-rose-400 font-bold";
+      } else {
+        remDisplay.className = "text-emerald-400 font-bold";
+      }
+    }
+
+    function checkBudgetQuiz() {
+      const inputVal = parseFloat(document.getElementById('userBudgetAnswer').value);
+      const feedback = document.getElementById('budgetQuizFeedback');
+
+      // Correct Total Spent: 6 + 3 + 8 + 5 = 22. Remaining = 30 - 22 = 8.
+      if (inputVal === 8) {
+        scores.bajet = 100;
+        playAudio('success');
+        feedback.className = "text-xs font-semibold text-emerald-400 mt-2";
+        feedback.innerText = "🎉 TEPAT! Jumlah kos RM 22.00, maka baki daripada peruntukan RM 30.00 ialah RM 8.00.";
+      } else {
+        scores.bajet = 0;
+        playAudio('error');
+        feedback.className = "text-xs font-semibold text-rose-400 mt-2";
+        feedback.innerText = "❌ Kurang Tepat. Kira jumlah kos dulu: (6 + 3 + 8 + 5 = RM 22). Kemudian tolak daripada RM 30.";
+      }
+      updateScoreDisplay();
+    }
+
+
+    // INITIALIZATION
+    window.addEventListener('DOMContentLoaded', () => {
+      renderElemen();
+      renderAlgorithm();
+      renderBudgetItems();
+      updateScoreDisplay();
+    });
+  </script>
+</body>
+</html>
+```eof
+
+Modul aplikasi web interaktif di atas telah siap dibina dan mengandungi keempat-empat bahagian simulasi:
+
+1. **Bahagian A (Pengelasan Elemen):** Murid boleh menyeret (drag & drop) atau mengetik komponen untuk mengagihkannya ke dalam kotak *Elektrik*, *Elektronik*, atau *Mekanikal*.
+2. **Bahagian B (Detektif RBT):** Murid boleh klik pada komponen kereta (bateri, mikropengawal, gear) untuk membuat diagnostik visual dan memilih punca kerosakan.
+3. **Bahagian C (Pengaturcaraan Robot):** Murid menyusun urutan blok pseudokod dan menguji simulasi skrin robot amaran tiada air secara langsung.
+4. **Bahagian D (Kalkulator Kos):** Murid melaraskan kuantiti bahan dan melihat pengiraan automatik resit bajet serta baki peruntukan.
